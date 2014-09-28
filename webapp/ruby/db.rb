@@ -2,9 +2,14 @@ require 'redis'
 require 'json'
 
 class RedisWrapper
-  attr_reader :client
-  def initialize
-    @client = ::Redis.new
+  class << self
+    def client
+      @client ||= ::Redis.new
+    end
+  end
+
+  def client
+    self.class.client
   end
 
   def get_user_by_id(id)
