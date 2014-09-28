@@ -106,15 +106,18 @@ module Isucon4
 
         ips.concat not_succeeded.each.map { |r| r['ip'] }
         succeeded = db.xquery('SELECT ip FROM
-(SELECT tmp.ip, COUNT(1) as cnt FROM login_log
+(SELECT login_log.ip, COUNT(*) AS cnt FROM
+  login_log
 JOIN
   (SELECT ip, MAX(id) AS last_login_id FROM login_log WHERE ip IS NOT NULL AND succeeded = 1 GROUP BY ip) as tmp
 ON
   tmp.ip = login_log.ip AND
-  tmp.last_login_id < login_log.id) as tmp2
-WHERE
-  ? < tmp2.cnt', threshold)
-        ips.concat succeeded.each.map{ |r| r['cnt'] }
+  tmp.last_login_id < login_log.id
+ GROUP BY
+ login_log.login) AS tmp2
+ WHERE
+   1  < cnt', threshold)
+        ips.concat succeeded.each.map{ |r| r['ip'] }
         ips
       end
 
@@ -127,14 +130,17 @@ WHERE
         user_ids.concat not_succeeded.each.map { |r| r['login'] }
 
         succeeded = db.xquery('SELECT login FROM
-(SELECT login, COUNT(1) as cnt FROM login_log
+(SELECT login_log.login, COUNT(*) AS cnt FROM
+  login_log
 JOIN
-  (SELECT user_id, MAX(id) AS last_login_id FROM login_log WHERE user_id IS NOT NULL AND succeeded = 1 GROUP BY user_id) as tmp
+  (SELECT user_id, login, MAX(id) AS last_login_id FROM login_log WHERE user_id IS NOT NULL AND succeeded = 1 GROUP BY user_id) as tmp
 ON
   tmp.user_id = login_log.user_id AND
-  tmp.last_login_id < login_log.id) as tmp2
-WHERE
-  ? < tmp2.cnt ', threshold)
+  tmp.last_login_id < login_log.id
+ GROUP BY
+ login_log.login) AS tmp2
+ WHERE
+   1  < cnt', threshold)
         user_ids.concat succeeded.each.map{ |r| r['login'] }
         user_ids
       end
