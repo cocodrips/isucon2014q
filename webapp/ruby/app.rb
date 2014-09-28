@@ -105,7 +105,15 @@ module Isucon4
         not_succeeded = db.xquery('SELECT ip FROM (SELECT ip, MAX(succeeded) as max_succeeded, COUNT(1) as cnt FROM login_log GROUP BY ip) AS t0 WHERE t0.max_succeeded = 0 AND t0.cnt >= ?', threshold)
 
         ips.concat not_succeeded.each.map { |r| r['ip'] }
-        succeeded = db.query('SELECT COUNT(1) AS cnt FROM login_log JOIN (SELECT ip, MAX(id) AS last_login_id FROM login_log WHERE succeeded = 1 GROUP by ip) AS ll WHERE login_log.ip = ll.ip AND ll.last_login_id < id')
+        succeeded = db.xquery('SELECT ip FROM
+(SELECT tmp.ip, COUNT(1) as cnt FROM login_log
+JOIN
+  (SELECT ip, MAX(id) AS last_login_id FROM login_log WHERE ip IS NOT NULL AND succeeded = 1 GROUP BY ip) as tmp
+ON
+  tmp.ip = login_log.ip AND
+  tmp.last_login_id < login_log.id) as tmp2
+WHERE
+  ? < tmp2.cnt', threshold)
         ips.concat succeeded.each.map{ |r| r['cnt'] }
         ips
       end
