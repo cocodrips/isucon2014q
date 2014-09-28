@@ -140,7 +140,7 @@ ON
  GROUP BY
  login_log.login) AS tmp2
  WHERE
-   1  < cnt', threshold)
+   ?  < cnt', threshold)
         user_ids.concat succeeded.each.map{ |r| r['login'] }
         user_ids
       end
