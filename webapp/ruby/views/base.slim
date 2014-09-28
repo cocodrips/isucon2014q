@@ -1,0 +1,16 @@
+doctype html
+- title ||= 'isucon4'
+html
+  head
+    meta[charset="UTF-8"]
+    link[rel="stylesheet" href="/stylesheets/bootstrap.min.css"]
+    link[rel="stylesheet" href="/stylesheets/bootflat.min.css"]
+    link[rel="stylesheet" href="/stylesheets/isucon-bank.css"]
+    title
+      = title
+  body
+    .container
+      h1#topbar
+        a[href="/"]
+          img[src="/images/isucon-bank.png" alt="いすこん銀行 オンラインバンキングサービス"]
+      == yield

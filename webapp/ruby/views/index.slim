@@ -1,0 +1,37 @@
+#be-careful-phising.panel.panel-danger
+  .panel-heading
+    span.hikaru-mozi
+      | 偽画面にご注意ください！
+  .panel-body
+    p
+      | 偽のログイン画面を表示しお客様の情報を盗み取ろうとする犯罪が多発しています。
+    p
+      | ログイン直後にダウンロード中や、見知らぬウィンドウが開いた場合、
+      br
+      | すでにウィルスに感染している場合がございます。即座に取引を中止してください。
+    p
+      | また、残高照会のみなど、必要のない場面で乱数表の入力を求められても、
+      br
+      | 絶対に入力しないでください。
+.page-header
+  h1
+    | ログイン
+- if flash[:notice]
+  #notice-message.alert.alert-danger[role="alert"]
+    = flash[:notice]
+.container
+  form.form-horizontal[role="form" action="/login" method="POST"]
+    .form-group
+      label.col-sm-3.control-label[for="input-username"]
+        | お客様ご契約ID
+      .col-sm-9
+        input#input-username.form-control[type="text" placeholder="半角英数字" name="login"]
+    .form-group
+      label.col-sm-3.control-label[for="input-password"]
+        | パスワード
+      .col-sm-9
+        input#input-password.form-control[type="password" name="password" placeholder="半角英数字・記号（２文字以上）"]
+    .form-group
+      .col-sm-offset-3.col-sm-9
+        button.btn.btn-primary.btn-lg.btn-block[type="submit"]
+          | ログイン
