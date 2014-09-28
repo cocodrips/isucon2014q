@@ -64,7 +64,7 @@ module Isucon4
           return [nil, :locked]
         end
 
-        if user && calculate_password_hash(password, user['salt']) == user['password_hash']
+        if user && Digest::SHA256.hexdigest("#{password}:#{user['salt']}") == user['password_hash']
           login_log(true, login, user['id'])
           [user, nil]
         elsif user
