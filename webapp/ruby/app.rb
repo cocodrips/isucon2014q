@@ -52,7 +52,7 @@ module Isucon4
       end
 
       def attempt_login(login, password)
-        user = db.xquery('SELECT * FROM users WHERE login = ?', login).first
+        user = redis.get_user_by_login(login) || db.xquery('SELECT * FROM users WHERE login = ?', login).first
 
         if ip_banned?
           login_log(false, login, user ? user['id'] : nil)
@@ -80,7 +80,10 @@ module Isucon4
         return @current_user if @current_user
         return nil unless session[:user_id]
 
-        @current_user = db.xquery('SELECT * FROM users WHERE id = ?', session[:user_id].to_i).first
+        @current_user =
+          redis.get_user_by_id(session[:user_id]) ||
+          db.xquery('SELECT * FROM users WHERE id = ?', session[:user_id].to_i).first
+
         unless @current_user
           session[:user_id] = nil
           return nil
