@@ -105,7 +105,7 @@ module Isucon4
 
         ips.concat not_succeeded.each.map { |r| r['ip'] }
         succeeded = db.query('SELECT COUNT(1) AS cnt FROM login_log JOIN (SELECT ip, MAX(id) AS last_login_id FROM login_log WHERE succeeded = 1 GROUP by ip) AS ll WHERE login_log.ip = ll.ip AND ll.last_login_id < id')
-        ips.concat succeeded.each.map{ |r| r['ip'] }
+        ips.concat succeeded.each.map{ |r| r['cnt'] }
         ips
       end
 
