@@ -4,11 +4,12 @@ sudo service mysqld restart
 sudo service nginx restart
 sudo service redis restart
 sudo service varnish restart
+supervisorctl restart isucon_ruby
 
 cd /home/isucon
 id=`git log | head -n 1| sed 's/commit //g'`
 time=`date '+%H:%M'`
-./benchmarker bench --workload 3 --api-key 106-2-ncfwse-f0fa-42e35b240be67daf3bc4ee438116b5f425eaf4a7 |tee /var/log/bench/${time}_${id}.log 
+./benchmarker bench --workload 4 --api-key 106-2-ncfwse-f0fa-42e35b240be67daf3bc4ee438116b5f425eaf4a7 |tee /var/log/bench/${time}_${id}.log 
 
 sudo mkdir /var/log/logs/${time}_${id}
 
