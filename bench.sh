@@ -21,6 +21,6 @@ sudo mv /var/log/bench/${time}_${id}.log /var/log/logs/${time}_${id}/bench.log
 
 cd /var/log/logs/${time}_${id}/
 sudo chown -R isucon:isucon ./
-sudo git add .
+git add .
 git commit -m "${time}"
 git push origin master
