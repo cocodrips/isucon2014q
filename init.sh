@@ -12,7 +12,10 @@ mysql -h ${myhost} -P ${myport} -u ${myuser} ${mydb} < sql/schema.sql
 mysql -h ${myhost} -P ${myport} -u ${myuser} ${mydb} < sql/dummy_users.sql
 mysql -h ${myhost} -P ${myport} -u ${myuser} ${mydb} < sql/dummy_log.sql
 
-
-cat << 'EOF' | mysql -h ${myhost} -P ${myport} -u ${myuser} -e
-    CREATE INDEX idx_login ON users (login);
+cat <<EOF
+ 'EOF' | mysql -h ${myhost} -P ${myport} -u ${myuser} -e
+    CREATE INDEX user_idx_login ON users (login);
+    CREATE INDEX login_log_idx_id_user_id_succeeded ON login_log (id, user_id, succeeded);
+    CREATE INDEX login_log_idx_id_user_id_ip ON login_log (id, user_id, ip);
+    CREATE INDEX login_log_idx_ip_id ON login_log (ip, id);
 EOF
