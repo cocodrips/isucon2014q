@@ -118,8 +118,16 @@ module Isucon4
 
         user_ids.concat not_succeeded.each.map { |r| r['login'] }
 
-        succeeded = db.query('SELECT COUNT(1) AS cnt FROM login_log JOIN (SELECT user_id, MAX(id) AS last_login_id FROM login_log WHERE succeeded = 1 GROUP by ip) AS ll WHERE login_log.user_id = ll.user_id AND ll.last_login_id < id')
-        user_ids.concat succeeded.each.map{ |r| r['cnt'] }
+        succeeded = db.xquery('SELECT login FROM
+(SELECT login, COUNT(1) as cnt FROM login_log
+JOIN
+  (SELECT user_id, MAX(id) AS last_login_id FROM login_log WHERE user_id IS NOT NULL AND succeeded = 1 GROUP BY user_id) as tmp
+ON
+  tmp.user_id = login_log.user_id AND
+  tmp.last_login_id < login_log.id) as tmp2
+WHERE
+  ? < tmp2.cnt ', threshold)
+        user_ids.concat succeeded.each.map{ |r| r['login'] }
         user_ids
       end
     end
