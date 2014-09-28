@@ -3,7 +3,6 @@ require 'digest/sha2'
 require 'mysql2-cs-bind'
 require 'rack-flash'
 require 'json'
-require_relative 'db'
 
 module Isucon4
   class App < Sinatra::Base
@@ -12,10 +11,6 @@ module Isucon4
     set :public_folder, File.expand_path('../../public', __FILE__)
 
     helpers do
-      def redis
-        @redis ||= RedisWrapper.new
-      end
-
       def config
         @config ||= {
           user_lock_threshold: (ENV['ISU4_USER_LOCK_THRESHOLD'] || 3).to_i,
@@ -24,7 +19,14 @@ module Isucon4
       end
 
       def db
-        @db ||= DBWrapper.new.client
+        Thread.current[:isu4_db] ||= Mysql2::Client.new(
+          host: ENV['ISU4_DB_HOST'] || 'localhost',
+          port: ENV['ISU4_DB_PORT'] ? ENV['ISU4_DB_PORT'].to_i : nil,
+          username: ENV['ISU4_DB_USER'] || 'root',
+          password: ENV['ISU4_DB_PASSWORD'],
+          database: ENV['ISU4_DB_NAME'] || 'isu4_qualifier',
+          reconnect: true,
+        )
       end
 
       def calculate_password_hash(password, salt)
@@ -52,7 +54,7 @@ module Isucon4
       end
 
       def attempt_login(login, password)
-        user = redis.get_user_by_login(login) || db.xquery('SELECT * FROM users WHERE login = ?', login).first
+        user = db.xquery('SELECT * FROM users WHERE login = ?', login).first
 
         if ip_banned?
           login_log(false, login, user ? user['id'] : nil)
@@ -80,10 +82,7 @@ module Isucon4
         return @current_user if @current_user
         return nil unless session[:user_id]
 
-        @current_user =
-          redis.get_user_by_id(session[:user_id]) ||
-          db.xquery('SELECT * FROM users WHERE id = ?', session[:user_id].to_i).first
-
+        @current_user = db.xquery('SELECT * FROM users WHERE id = ?', session[:user_id].to_i).first
         unless @current_user
           session[:user_id] = nil
           return nil
@@ -95,7 +94,7 @@ module Isucon4
       def last_login
         return nil unless current_user
 
-        @last_login ||= db.xquery('SELECT * FROM login_log WHERE succeeded = 1 AND user_id = ? ORDER BY id DESC LIMIT 2', current_user['id']).each.last
+        db.xquery('SELECT * FROM login_log WHERE succeeded = 1 AND user_id = ? ORDER BY id DESC LIMIT 2', current_user['id']).each.last
       end
 
       def banned_ips
@@ -105,16 +104,8 @@ module Isucon4
         not_succeeded = db.xquery('SELECT ip FROM (SELECT ip, MAX(succeeded) as max_succeeded, COUNT(1) as cnt FROM login_log GROUP BY ip) AS t0 WHERE t0.max_succeeded = 0 AND t0.cnt >= ?', threshold)
 
         ips.concat not_succeeded.each.map { |r| r['ip'] }
-
-        last_succeeds = db.xquery('SELECT ip, MAX(id) AS last_login_id FROM login_log WHERE succeeded = 1 GROUP by ip')
-
-        last_succeeds.each do |row|
-          count = db.xquery('SELECT COUNT(1) AS cnt FROM login_log WHERE ip = ? AND ? < id', row['ip'], row['last_login_id']).first['cnt']
-          if threshold <= count
-            ips << row['ip']
-          end
-        end
-
+        succeeded = db.query('SELECT COUNT(1) AS cnt FROM login_log JOIN (SELECT ip, MAX(id) AS last_login_id FROM login_log WHERE succeeded = 1 GROUP by ip) AS ll WHERE login_log.ip = ll.ip AND ll.last_login_id < id')
+        ips.concat succeeded.each.map{ |r| r['ip'] }
         ips
       end
 
