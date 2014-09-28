@@ -1,0 +1,5 @@
+111.87.9.150 - - - [28/Sep/2014:01:25:14 +0000] "GET / HTTP/1.1" 200 2228 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:32.0) Gecko/20100101 Firefox/32.0" "-"
+111.87.9.150 - - - [28/Sep/2014:01:25:14 +0000] "GET /stylesheets/bootstrap.min.css HTTP/1.1" 304 0 "http://ec2-54-64-208-211.ap-northeast-1.compute.amazonaws.com/" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:32.0) Gecko/20100101 Firefox/32.0" "-"
+111.87.9.150 - - - [28/Sep/2014:01:25:14 +0000] "GET /stylesheets/bootflat.min.css HTTP/1.1" 304 0 "http://ec2-54-64-208-211.ap-northeast-1.compute.amazonaws.com/" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:32.0) Gecko/20100101 Firefox/32.0" "-"
+111.87.9.150 - - - [28/Sep/2014:01:25:14 +0000] "GET /stylesheets/isucon-bank.css HTTP/1.1" 304 0 "http://ec2-54-64-208-211.ap-northeast-1.compute.amazonaws.com/" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:32.0) Gecko/20100101 Firefox/32.0" "-"
+111.87.9.150 - - - [28/Sep/2014:01:25:14 +0000] "GET /images/isucon-bank.png HTTP/1.1" 304 0 "http://ec2-54-64-208-211.ap-northeast-1.compute.amazonaws.com/" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:32.0) Gecko/20100101 Firefox/32.0" "-"

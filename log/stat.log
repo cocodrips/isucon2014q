@@ -1,0 +1,5 @@
+GET	/	0.015
+GET	/stylesheets/bootstrap.min.css	0.001
+GET	/stylesheets/bootflat.min.css	0.001
+GET	/stylesheets/isucon-bank.css	0.001
+GET	/images/isucon-bank.png	0.013
