@@ -48,11 +48,11 @@ ARGF.each_line do |l|
   method, path, time = l.chomp.split("\t")
   paths.each do |k|
     if File.fnmatch(k, path, File::FNM_PATHNAME) && method == "GET"
-      get[k] += time.to_i
+      get[k] += time.to_f
       nget[k] += 1
     end
     if File.fnmatch(k, path, File::FNM_PATHNAME) && method == "POST"
-      post[k] += time.to_i
+      post[k] += time.to_f
       npost[k] += 1
     end
   end
