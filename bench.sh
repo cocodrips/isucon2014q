@@ -2,6 +2,7 @@ rm -f /var/log/nginx/*.log
 rm -f /var/log/mysql/*.log
 sudo service mysqld restart
 sudo service nginx restart
+sudo service redis restart
 sudo service varnish restart
 
 cd /home/isucon
