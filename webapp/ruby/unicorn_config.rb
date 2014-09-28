@@ -1,3 +1,3 @@
 worker_processes 4
-listen      "universe.sock"
+listen      "/home/isucon/webapp/ruby/universe.sock"
 preload_app true
